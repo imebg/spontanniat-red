@@ -1,0 +1,397 @@
+/* Спонтанният ред — landing page
+   Визуален език: колаж върху синя хартия, жълт кръг от логото,
+   растерни точки, бели зигзаги, жълта „лента“, кондензиран шрифт. */
+
+:root {
+  --blue: #1f6fd8;
+  --yellow: #e0de2d;
+  --ink: #231f20;
+  --paper: #f4f0e6;
+  --red: #e60a0a;
+
+  --gutter: clamp(16px, 4.5vw, 64px);
+  --display: "Oswald", "Arial Narrow", "Roboto Condensed", sans-serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  background: var(--blue);
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+body {
+  min-height: 100vh;
+  min-height: 100svh;
+  background: var(--blue);
+  color: var(--paper);
+  font-family: var(--display);
+  -webkit-font-smoothing: antialiased;
+  overflow-x: hidden;
+}
+
+/* Хартиена текстура, както във визуалите на бюлетина */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  pointer-events: none;
+  opacity: 0.22;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+.page {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100svh;
+  padding:
+    max(var(--gutter), env(safe-area-inset-top))
+    max(var(--gutter), env(safe-area-inset-right))
+    max(var(--gutter), env(safe-area-inset-bottom))
+    max(var(--gutter), env(safe-area-inset-left));
+  overflow: hidden;
+}
+
+/* ---------- Лого ----------
+   Логото заема мястото на големия жълт кръг от колажа. */
+
+.page {
+  --logo: clamp(140px, 40vw, 210px);
+}
+
+.masthead {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.logo {
+  display: block;
+  width: var(--logo);
+  height: auto;
+  border-radius: 50%;
+}
+
+/* ---------- Композиция ---------- */
+
+.hero {
+  position: relative;
+  z-index: 1;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: clamp(24px, 3.5vh, 44px);
+  padding-top: clamp(20px, 4vh, 48px);
+  padding-bottom: 8px;
+}
+
+/* ---------- Колаж ----------
+   Растерът и зигзагът се мерят спрямо логото,
+   за да остане композицията цяла при всяка ширина. */
+
+.collage {
+  --sun: var(--logo);
+  --sun-right: max(var(--gutter), env(safe-area-inset-right));
+  --sun-top: max(var(--gutter), env(safe-area-inset-top));
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+/* Растер зад лявия ръб на логото */
+.dots {
+  position: absolute;
+  width: calc(var(--sun) * 0.8);
+  aspect-ratio: 1;
+  top: calc(var(--sun-top) - var(--sun) * 0.12);
+  right: calc(var(--sun-right) + var(--sun) * 0.55);
+  background-image: radial-gradient(circle, var(--ink) 1.3px, transparent 1.6px);
+  background-size: 8px 8px;
+  -webkit-mask-image: radial-gradient(closest-side, #000 30%, transparent 100%);
+  mask-image: radial-gradient(closest-side, #000 30%, transparent 100%);
+  opacity: 0.8;
+}
+
+.zigzag {
+  position: absolute;
+  width: calc(var(--sun) * 0.36);
+  top: calc(var(--sun-top) + var(--sun) * 0.74);
+  right: calc(var(--sun-right) + var(--sun) * 0.9);
+  stroke: var(--paper);
+  stroke-width: 3.2;
+  stroke-linejoin: miter;
+  overflow: visible;
+}
+
+/* ---------- Заглавие ---------- */
+
+/* Заглавие като изрезки от тъмбнейлите:
+   бял текст върху черни ленти + жълта лента с червен акцент */
+/* Лентите (::before) са на заден слой в общия stacking context на заглавието,
+   текстът е винаги над тях — така никоя лента не закрива букви от съседен ред. */
+.headline {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  font-weight: 500;
+  text-transform: uppercase;
+  line-height: 1;
+  letter-spacing: 0;
+  font-size: clamp(3rem, 19.5vw, 13rem);
+}
+
+.headline__line {
+  --tilt: 0deg;
+  position: relative;
+  display: block;
+  color: #fff;
+}
+
+.headline__line::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: #000;
+  transform: rotate(var(--tilt));
+  transform-origin: left top;
+}
+
+.headline__line > span {
+  display: inline-block;
+  transform: rotate(var(--tilt));
+  transform-origin: left top;
+}
+
+.headline__line--1 {
+  --tilt: -1deg;
+}
+
+.headline__line--1 > span {
+  padding: 0.04em 0.14em 0.2em 0.22em;
+}
+
+.headline__line--2 {
+  --tilt: -3.2deg;
+  margin-top: -0.16em;
+  margin-left: 0.1em;
+}
+
+.headline__line--2 > span {
+  padding: 0.04em 0.12em 0.1em 0.18em;
+}
+
+.headline__tag {
+  --tilt: -2.4deg;
+  margin-top: -0.06em;
+  margin-left: 0.52em;
+  color: #000;
+  font-weight: 700;
+  font-size: 0.56em;
+  line-height: 1;
+}
+
+.headline__tag::before {
+  z-index: -2;
+  background: var(--yellow);
+  clip-path: polygon(0.8% 0, 100% 0, 100% 86%, 98.6% 100%, 0 100%);
+}
+
+.headline__tag > span {
+  padding: 0.12em 0.26em 0.08em 0.18em;
+}
+
+.headline__tag em {
+  font-style: normal;
+  color: var(--red);
+}
+
+/* ---------- Описание ---------- */
+
+.intro {
+  position: relative;
+  z-index: 1;
+  max-width: 34rem;
+  font-family: "Golos Text", system-ui, sans-serif;
+  font-size: clamp(1.02rem, 4.3vw, 1.2rem);
+  line-height: 1.5;
+  color: var(--paper);
+}
+
+.intro strong {
+  font-weight: 600;
+}
+
+.intro__kicker {
+  margin-top: 0.7em;
+  font-family: var(--display);
+  font-weight: 500;
+  font-size: 0.98em;
+  letter-spacing: 0.05em;
+  text-wrap: balance;
+  text-transform: uppercase;
+  color: var(--yellow);
+}
+
+/* ---------- Бутони ---------- */
+
+.actions {
+  position: relative;
+  z-index: 1;
+  display: grid;
+  gap: 14px;
+  width: 100%;
+  max-width: 520px;
+}
+
+.listen {
+  list-style: none;
+  display: grid;
+  gap: 14px;
+}
+
+.btn {
+  --btn-bg: var(--paper);
+  --btn-fg: var(--ink);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  gap: 14px;
+  min-height: 64px;
+  padding: 0 20px;
+  border: 2px solid var(--ink);
+  background: var(--btn-bg);
+  color: var(--btn-fg);
+  box-shadow: 5px 5px 0 var(--ink);
+  font-size: 1.12rem;
+  font-weight: 500;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  text-decoration: none;
+  transition: transform 0.12s ease, box-shadow 0.12s ease, background-color 0.12s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.btn:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 7px 7px 0 var(--ink);
+}
+
+.btn:active {
+  transform: translate(3px, 3px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 5px;
+}
+
+.btn__icon {
+  flex: none;
+  width: 24px;
+  height: 24px;
+}
+
+.btn__icon-cut {
+  stroke: var(--btn-bg);
+}
+
+/* Подкрепа: същата система, но в жълтото на логото, за да се откроява */
+.btn--support {
+  --btn-bg: var(--yellow);
+  --btn-fg: var(--ink);
+  margin-top: 10px;
+  font-weight: 700;
+}
+
+.btn--support:focus-visible {
+  outline-color: var(--paper);
+}
+
+/* ---------- Лого на ИПИ ---------- */
+
+.colophon {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  justify-content: center;
+  margin-top: clamp(64px, 12vh, 112px);
+  padding-bottom: clamp(16px, 3vh, 32px);
+}
+
+.colophon__ime {
+  display: block;
+  padding: 8px;
+}
+
+.colophon__ime img {
+  display: block;
+  width: clamp(76px, 22vw, 104px);
+  height: auto;
+}
+
+.colophon__ime:focus-visible {
+  outline: 3px solid var(--yellow);
+  outline-offset: 4px;
+}
+
+/* ---------- По-широки екрани ---------- */
+
+@media (min-width: 900px) {
+  .page {
+    --logo: min(30vw, 56vh);
+  }
+
+  .masthead {
+    position: absolute;
+    top: 50%;
+    right: var(--gutter);
+    transform: translateY(-50%);
+  }
+
+  .collage {
+    --sun-right: var(--gutter);
+    --sun-top: calc(50% - var(--sun) * 0.5);
+  }
+
+  .hero {
+    padding-top: clamp(28px, 5vh, 56px);
+  }
+
+  .headline {
+    font-size: clamp(3.4rem, min(12vw, 15vh), 13rem);
+  }
+}
+
+@media (max-width: 359px) {
+  .btn {
+    gap: 10px;
+    padding: 0 14px;
+    font-size: 1rem;
+    letter-spacing: 0.04em;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .btn {
+    transition: none;
+  }
+}
